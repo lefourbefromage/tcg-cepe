@@ -1,18 +1,17 @@
 import { useState } from 'react'
-import type { OpenedCard } from '../../engine'
-import { useGame } from '../../game/context'
+import { type OpenResult, useGame } from '../../game/context'
 import { Home } from './Home'
 import { Opening } from './Opening'
 
 /** Onglet Booster : accueil (écrans 1 et 7) ou ouverture en cours (écrans 2 à 6). */
 export function BoosterScreen({ onShowCollection }: { onShowCollection: () => void }) {
-  const { open, setToastsPaused } = useGame()
-  const [opening, setOpening] = useState<{ id: number; cards: OpenedCard[]; golden: boolean; from: DOMRect | null } | null>(null)
+  const { open, openAll, setToastsPaused } = useGame()
+  const [opening, setOpening] = useState<(OpenResult & { id: number; from: DOMRect | null }) | null>(null)
 
   /** `from` : position du paquet sur l'accueil, pour enchaîner sans saut. */
-  const start = (from: DOMRect | null = null) => {
+  const start = (from: DOMRect | null = null, all = false) => {
     setToastsPaused(true) // avant le tirage : aucun toast ne doit apparaître avant le récap
-    const result = open()
+    const result = all ? openAll() : open()
     if (result) setOpening({ id: Date.now(), ...result, from })
     else setToastsPaused(false)
     return result !== null
@@ -24,6 +23,8 @@ export function BoosterScreen({ onShowCollection }: { onShowCollection: () => vo
         key={opening.id}
         cards={opening.cards}
         golden={opening.golden}
+        count={opening.count}
+        goldenCount={opening.goldenCount}
         from={opening.from}
         onOpenAnother={() => {
           if (!start()) setOpening(null)
@@ -36,5 +37,5 @@ export function BoosterScreen({ onShowCollection }: { onShowCollection: () => vo
       />
     )
   }
-  return <Home onOpen={start} />
+  return <Home onOpen={(from) => start(from)} onOpenAll={(from) => start(from, true)} />
 }

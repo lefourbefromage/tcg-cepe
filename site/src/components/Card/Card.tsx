@@ -59,6 +59,7 @@ export function Card({
   const hasHolo = isFace && (holo ?? (rarity === 'epique' || rarity === 'legendaire'))
   const frameName = variant === 'back' ? 'dos' : variant === 'missing' ? 'commun' : rarity
   const frame = frameImage(frameName)
+  const photo = photoImage(num)
 
   useFitText(titleBoxRef, titleTextRef, `${variant}:${shownTitle}`)
   useTilt(rootRef, tilt, gyro)
@@ -90,16 +91,19 @@ export function Card({
         )}
 
         {isFace && (
-          <img
-            className={styles.photo}
-            srcSet={photoImage(num).srcSet}
-            src={photoImage(num).src}
-            sizes={sizes}
-            alt=""
-            loading={loading}
-            decoding="async"
-            draggable={false}
-          />
+          <picture className={styles.photoPicture}>
+            <source type="image/avif" srcSet={photo.avif} sizes={sizes} />
+            <img
+              className={styles.photo}
+              srcSet={photo.srcSet}
+              src={photo.src}
+              sizes={sizes}
+              alt=""
+              loading={loading}
+              decoding="async"
+              draggable={false}
+            />
+          </picture>
         )}
         {variant === 'missing' && <div className={styles.silhouette} />}
 

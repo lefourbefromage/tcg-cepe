@@ -43,8 +43,11 @@ function drawInk(ctx: CanvasRenderingContext2D, text: string, x: number, y: numb
   ctx.fillText(text, x, y)
 }
 
-/** Génère l'image PNG d'une carte (fond sombre, lueur de la rareté), sans holo. */
-export async function renderCardPng(num: string, rarity: Rarity): Promise<Blob> {
+/** Qualité JPEG de l'image partagée : ~10× plus léger qu'un PNG, sans différence visible. */
+const JPEG_QUALITY = 0.9
+
+/** Génère l'image JPEG d'une carte (fond sombre, lueur de la rareté), sans holo. */
+export async function renderCardImage(num: string, rarity: Rarity): Promise<Blob> {
   const title = getCard(num)?.title ?? `Carte ${num}`
   const cardW = SHARE_WIDTH * 0.84
   const cardH = cardW * 1.5
@@ -107,6 +110,6 @@ export async function renderCardPng(num: string, rarity: Rarity): Promise<Blob> 
   drawInk(ctx, numText, SHARE_WIDTH / 2, numBaseline, cardW)
 
   return new Promise((resolve, reject) =>
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('PNG non généré'))), 'image/png'),
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Image non générée'))), 'image/jpeg', JPEG_QUALITY),
   )
 }

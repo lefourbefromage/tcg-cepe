@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getCard, type Rarity, RARITY_LABEL } from '../../engine'
-import { renderCardPng } from '../../lib/cardImage'
+import { renderCardImage } from '../../lib/cardImage'
 import buttons from '../../styles/buttons.module.css'
 import styles from './ShareSheet.module.css'
 
@@ -34,12 +34,12 @@ export function ShareSheet({ num, rarity, onClose }: { num: string; rarity: Rari
   const [error, setError] = useState(false)
   const [notice, setNotice] = useState('')
   const closeRef = useRef<HTMLButtonElement>(null)
-  const filename = `confrerie-du-cepe-${num}-${rarity}.png`
+  const filename = `confrerie-du-cepe-${num}-${rarity}.jpg`
 
   // Image générée dès l'ouverture : navigator.share doit être appelé directement dans le geste.
   useEffect(() => {
     let cancelled = false
-    renderCardPng(num, rarity)
+    renderCardImage(num, rarity)
       .then((b) => !cancelled && setBlob(b))
       .catch(() => !cancelled && setError(true))
     return () => {
@@ -68,7 +68,7 @@ export function ShareSheet({ num, rarity, onClose }: { num: string; rarity: Rari
 
   const share = async () => {
     if (!blob) return
-    const file = new File([blob], filename, { type: 'image/png' })
+    const file = new File([blob], filename, { type: 'image/jpeg' })
     try {
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], text })

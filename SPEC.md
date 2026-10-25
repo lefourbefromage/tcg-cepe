@@ -24,7 +24,7 @@ Les PNG de `frames/` font ~1 à 1,5 Mo chacun : trop lourd. Créer `scripts/opti
   - WebP qualité 82, `alphaQuality: 90`, `effort: 6`, en 2 tailles : 512×768 (`@1x`) et 1024×1536 (`@2x`).
   - AVIF qualité 55 en option, servi via `<picture>` / `image-set()`.
   - Objectifs (relevés aux poids mesurés) : WebP **≤ 380 Ko** en @2x, ≤ 160 Ko en @1x · AVIF ≤ 180 Ko en @2x, ≤ 70 Ko en @1x.
-- **Photos des cartes** : WebP qualité 78, 2 tailles : 434×498 (`@1x`, collection/miniatures) et 868×996 (`@2x`, grande carte). Objectifs ≤ 160 Ko en @2x, ≤ 50 Ko en @1x.
+- **Photos des cartes** : AVIF qualité 50 (`effort: 2`, rapide) servi en priorité, WebP qualité 78 en repli ; 2 tailles : 434×498 (`@1x`, collection/miniatures) et 868×996 (`@2x`, grande carte). Objectifs : AVIF ≤ 90 Ko en @2x, ≤ 30 Ko en @1x · WebP ≤ 160 Ko en @2x, ≤ 50 Ko en @1x.
 - Si un PNG doit rester PNG : passer par `pngquant`/`sharp.png({ palette: true, quality: 80, compressionLevel: 9 })`.
 - Utiliser `srcset`/`sizes`, `loading="lazy"` et `decoding="async"` dans la collection ; précharger les 4 cadres + dos + booster au démarrage.
 - Le script affiche un tableau avant/après des poids et échoue si un fichier dépasse les objectifs.
@@ -43,6 +43,7 @@ Les PNG de `frames/` font ~1 à 1,5 Mo chacun : trop lourd. Créer `scripts/opti
 ## 5. Règles de jeu
 - 1 booster = 10 cartes. **1 booster gratuit toutes les 5 min**. 10 boosters au premier lancement. Stock max 10 (minuteur arrêté quand plein).
 - Chaque carte : photo au hasard parmi les 132, puis rareté : Commun 60 % · Rare 28 % · Épique 10 % · Légendaire 2 %.
+- **Booster doré** : 2 % des boosters (`GOLDEN_CHANCE`) ne contiennent que des Épiques et des Légendaires (mêmes poids relatifs : ~83 % / 17 %). Non annoncé sur l'accueil : le paquet vire à l'or à l'ouverture. Les garanties cachées restent actives.
 - Collection complète = 132 photos × 4 raretés = 528 variantes. Doublon = même photo ET même rareté.
 - Garanties :
   - Par booster : si les 9 premières sont communes, la 10ᵉ est au moins Rare.
@@ -56,17 +57,18 @@ Les PNG de `frames/` font ~1 à 1,5 Mo chacun : trop lourd. Créer `scripts/opti
 
 ## 6. Écrans
 Navigation basse mobile 3 onglets : Booster · Collection · Hauts faits (desktop : barre en haut).
-1. **Accueil booster** : compteur de boosters (x/10), paquet empilé, bouton « Ouvrir un booster », minuteur jusqu'au prochain + barre.
-2. **Ouverture** : au tap/swipe le tirage est calculé ; le paquet s'illumine à la couleur de la **meilleure rareté** du booster ; la bande du haut se déchire le long du pointillé (≈ 12 % de la hauteur, bord irrégulier, 400 ms) et s'envole ; le paquet glisse vers le bas (300 ms). Découpe = même `booster` masquée en 2 parties (clip-path).
+1. **Accueil booster** : compteur de boosters (x/10), paquet empilé (seul celui de devant s'incline selon le pointeur), bouton « Ouvrir un booster », « Tout ouvrir (n) » dès 2 boosters, minuteur jusqu'au prochain + barre.
+2. **Ouverture** : au tap/swipe le tirage est calculé ; la bande du haut se déchire le long du pointillé (12,7 % de la hauteur, bord irrégulier) et s'envole ; effets de couleur façon Vampire Survivors / Megabonk selon la **meilleure rareté** (teinte de l'écran, colonne de lumière, rayons tournants, étincelles ; flash et tremblement dès Épique ; arc-en-ciel pour Légendaire et booster doré), plus longs pour les raretés hautes ; le paquet descend hors de l'écran et découvre les cartes, à sa taille et à sa place, qui grossissent ensuite jusqu'au centre. Découpe = même `booster` masquée en 2 parties (clip-path).
 3. **Pile face cachée** : 10 dos **sans aucune lueur**, léger décalage ±4°, compteur x/10, rangée des cartes révélées en bas.
 4. **Révélation** : tap → flip 3D rotateY 180° (500 ms, ease-out-back) ; à mi-flip, flash + glow de la rareté qui gonfle puis pulse. Badge « NOUVEAU » si nouvelle variante.
 5. **Légendaire** : fond assombri, rayons dorés, ~40 particules (900 ms), vibration (`navigator.vibrate`).
-6. **Récap** : les 10 cartes en éventail, la meilleure au centre en grand (rareté la plus haute, puis la plus récente) ; « Ouvrir un autre (n restants) », « Voir la collection », « Partager ». Tap sur une carte → zoom plein écran avec holo.
+6. **Récap** : la meilleure carte en grand (rareté la plus haute, puis la plus récente), les 9 autres en main de cartes en dessous (toutes visibles) ; « Ouvrir un autre (n restants) », « Voir la collection », « Partager ». Tap sur une carte → zoom plein écran avec holo.
+   - **Tout ouvrir** : une seule animation d'ouverture (effet de la meilleure rareté, ou doré), puis grille de toutes les cartes regroupées par rareté (Légendaire → Commune, nouvelles d'abord), compteurs par rareté ; « Voir la collection », « Retour ».
 7. **Plus de booster** : minuteur circulaire, « Échanger 20 pts contre 1 booster », rappel.
 8. **Collection** : grille (une tuile = une photo, affiche la plus haute rareté obtenue + 4 pastilles de rareté). Recherche, filtre Statut (Toutes / Obtenues / Manquantes) × filtre Rareté, tri (Numéro, Rareté, Nom, Date d'ouverture). Progression (variantes x/528, photos x/132, par rareté). Fiche détail au tap (4 variantes, date d'obtention, exemplaires).
 9. **Recyclage** : liste des doublons, points par ligne, solde avant/après, bouton « Recycler » + « Échanger 20 pts contre 1 booster ».
 10. **Hauts faits** : liste par catégorie (Ouverture, Rareté, Collection, Secrets), barre de progression, points ; toast doré au déblocage (3 s). Secrets affichés « ??? ».
-11. **Partage** : feuille avec aperçu de la carte, message prérempli modifiable + 3 suggestions ; « Partager » = `navigator.share({ files: [png], text })` (feuille native, l'utilisateur choisit Telegram et le groupe) ; « Enregistrer l'image ». PNG de la carte généré côté client (html-to-image ou canvas, 1000×1500). Si `navigator.canShare({ files })` est faux : texte seul + téléchargement.
+11. **Partage** : feuille avec aperçu de la carte, message prérempli modifiable + 3 suggestions ; « Partager » = `navigator.share({ files: [jpeg], text })` (feuille native, l'utilisateur choisit Telegram et le groupe) ; « Enregistrer l'image ». Image JPEG (qualité 0,9, ~10× plus légère qu'un PNG) de la carte générée côté client (canvas, 1000×1500). Si `navigator.canShare({ files })` est faux : texte seul + téléchargement.
 
 ## 7. Hauts faits (points)
 - Ouverture : 1er booster 5 · 10 boosters 10 · 50 → 25 · 100 → 50 · « Fidèle » 7 jours différents 25.

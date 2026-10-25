@@ -394,8 +394,9 @@
 /* ─── Récap (écran 6) ────────────────────────────────────────────────── */
 
 .recap {
-  --best-w: min(50vw, 240px, calc((100dvh - 360px) * 2 / 3));
-  --fan-w: calc(var(--best-w) * 0.66);
+  --best-w: min(46vw, 220px, calc((100dvh - 480px) * 2 / 3));
+  --hand-w: min(21vw, 108px);
+  --hand-step: min(9vw, 64px);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -420,58 +421,60 @@
   color: var(--accent);
 }
 
-.fan {
-  position: relative;
-  width: 100%;
-  height: calc(var(--best-w) * 1.5 + 16px);
-  margin: 12px 0 16px;
-}
-
-.fanCard,
-.bestCard {
-  position: absolute;
-  left: 50%;
+.bestCard,
+.handCard {
   padding: 0;
   border: 0;
   background: none;
   cursor: pointer;
 }
 
-.fanCard {
-  /* Centrée derrière la meilleure carte, pivot sous la carte → arc. */
-  top: calc(var(--best-w) * 0.22);
-  width: var(--fan-w);
-  transform-origin: 50% 210%;
-  transform: translateX(-50%) rotate(var(--angle));
-  animation: spread 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) backwards;
-  animation-delay: calc(var(--k) * 30ms);
-}
-
-.fanCard:hover,
-.fanCard:focus-visible {
-  z-index: 5;
-  transform: translateX(-50%) rotate(var(--angle)) translateY(-10%);
-}
-
-@keyframes spread {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) rotate(0deg);
-  }
-}
-
+/* Meilleure carte, en grand. */
 .bestCard {
-  z-index: 10;
-  top: 8px;
   width: var(--best-w);
-  transform: translateX(-50%);
-  animation: best-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s backwards;
+  min-width: 140px;
+  margin: 10px 0 6px;
+  animation: best-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
 }
 
 @keyframes best-in {
   from {
     opacity: 0;
-    transform: translateX(-50%) scale(0.7);
+    transform: scale(0.7);
+  }
+}
+
+/* Main de cartes : décalage horizontal, légère rotation et arc. */
+.hand {
+  position: relative;
+  width: 100%;
+  height: calc(var(--hand-w) * 1.5 + 28px);
+  margin-bottom: 8px;
+}
+
+.handCard {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--hand-w);
+  transform-origin: 50% 100%;
+  transform: translateX(calc(-50% + var(--k) * var(--hand-step))) translateY(calc(var(--k) * var(--k) * 2.5px))
+    rotate(calc(var(--k) * 5deg));
+  transition: transform 0.2s ease;
+  animation: deal 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) backwards;
+  animation-delay: calc(0.2s + var(--i) * 40ms);
+}
+
+.handCard:hover,
+.handCard:focus-visible {
+  z-index: 20;
+  transform: translateX(calc(-50% + var(--k) * var(--hand-step))) translateY(-14%) rotate(calc(var(--k) * 5deg)) scale(1.08);
+}
+
+@keyframes deal {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(30%) rotate(0deg);
   }
 }
 
@@ -503,7 +506,7 @@
   .slotThumb > *,
   .rays,
   .particle,
-  .fanCard,
+  .handCard,
   .bestCard {
     animation: none;
   }

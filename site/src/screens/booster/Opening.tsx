@@ -4,6 +4,7 @@ import { Card } from '../../components/Card/Card'
 import { BOOSTER_SIZE, getCard, type OpenedCard, RARITY_LABEL, rarityRank } from '../../engine'
 import { useGame } from '../../game/context'
 import { duration, vibrate } from '../../lib/motion'
+import { BulkRecap } from './BulkRecap'
 import { FlipCard } from './FlipCard'
 import { LegendaryFx } from './LegendaryFx'
 import { type FxLevel, TEAR_MS } from './fxConfig'
@@ -20,11 +21,12 @@ type Phase = 'golden' | 'tear' | 'drop' | 'grow' | 'pile' | 'recap'
 
 const PACK_PHASE: Partial<Record<Phase, PackPhase>> = { golden: 'idle', tear: 'torn', drop: 'gone' }
 /** Durée de chaque étape de l'ouverture du paquet (ms) ; la déchirure dépend de l'intensité. */
-const timeline = (level: FxLevel): Partial<Record<Phase, [next: Phase, ms: number]>> => ({
+const timeline = (level: FxLevel, bulk: boolean): Partial<Record<Phase, [next: Phase, ms: number]>> => ({
   golden: ['tear', 750],
   tear: ['drop', TEAR_MS[level]],
   drop: ['grow', 450],
-  grow: ['pile', 420],
+  // « Tout ouvrir » : directement la grille de toutes les cartes.
+  grow: [bulk ? 'recap' : 'pile', 420],
 })
 const GROW_MS = 420
 const FLIP_MS = 500
@@ -35,8 +37,11 @@ const CARD_SIZES = '(max-width: 600px) 72vw, 300px'
 
 export interface OpeningProps {
   cards: OpenedCard[]
-  /** Booster doré : uniquement des Épiques et des Légendaires. */
+  /** Booster doré : uniquement des Épiques et des Légendaires (au moins un pour « Tout ouvrir »). */
   golden?: boolean
+  /** Nombre de boosters ouverts (« Tout ouvrir » si plus d'un), dont dorés. */
+  count?: number
+  goldenCount?: number
   /** Position du paquet sur l'accueil : il glisse de là jusqu'au centre. */
   from?: DOMRect | null
   onOpenAnother: () => void
@@ -45,7 +50,17 @@ export interface OpeningProps {
 }
 
 /** Écrans 2 à 6 : ouverture du paquet, pile face cachée, révélations, récap. */
-export function Opening({ cards, golden = false, from = null, onOpenAnother, onShowCollection, onClose }: OpeningProps) {
+export function Opening({
+  cards,
+  golden = false,
+  count = 1,
+  goldenCount = 0,
+  from = null,
+  onOpenAnother,
+  onShowCollection,
+  onClose,
+}: OpeningProps) {
+  const bulk = count > 1
   const [phase, setPhase] = useState<Phase>(golden ? 'golden' : 'tear')
   const [index, setIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
@@ -70,11 +85,11 @@ export function Opening({ cards, golden = false, from = null, onOpenAnother, onS
   useEffect(() => () => setToastsPaused(false), [setToastsPaused])
 
   useEffect(() => {
-    const step = timeline(level)[phase]
+    const step = timeline(level, bulk)[phase]
     if (!step) return
     const id = setTimeout(() => setPhase(step[0]), duration(step[1]))
     return () => clearTimeout(id)
-  }, [phase, level])
+  }, [phase, level, bulk])
 
   // Paquet et cartes restent à la place et à la taille du paquet de l'accueil…
   useLayoutEffect(() => {
@@ -118,7 +133,11 @@ export function Opening({ cards, golden = false, from = null, onOpenAnother, onS
   if (phase === 'recap') {
     return (
       <div className={styles.overlay}>
-        <Recap cards={cards} golden={golden} onOpenAnother={onOpenAnother} onShowCollection={onShowCollection} onClose={onClose} />
+        {bulk ? (
+          <BulkRecap cards={cards} count={count} goldenCount={goldenCount} onShowCollection={onShowCollection} onClose={onClose} />
+        ) : (
+          <Recap cards={cards} golden={golden} onOpenAnother={onOpenAnother} onShowCollection={onShowCollection} onClose={onClose} />
+        )}
       </div>
     )
   }
@@ -136,7 +155,9 @@ export function Opening({ cards, golden = false, from = null, onOpenAnother, onS
         <span className={styles.count} aria-live="polite">
           {opening ? (
             golden ? (
-              <span className={styles.goldenLabel}>Booster doré !</span>
+              <span className={styles.goldenLabel}>{bulk ? `${count} boosters, dont ${goldenCount > 1 ? `${goldenCount} dorés` : 'un doré'} !` : 'Booster doré !'}</span>
+            ) : bulk ? (
+              `Ouverture de ${count} boosters…`
             ) : (
               'Ouverture…'
             )
@@ -158,6 +179,7 @@ export function Opening({ cards, golden = false, from = null, onOpenAnother, onS
           {(phase === 'tear' || phase === 'drop' || phase === 'grow') && <OpeningFx level={level} fading={phase === 'grow'} />}
           <div className={styles.pile} data-packed={PACK_PHASE[phase] ? true : undefined}>
             {cards.map((c, i) => {
+              if (i >= BOOSTER_SIZE) return null // « Tout ouvrir » : une pile de 10 dos suffit à l'animation
               if (i <= hidden && !(opening && i === index)) return null
               return (
                 <div

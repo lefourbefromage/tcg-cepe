@@ -70,6 +70,12 @@
   }
 }
 
+.openButtons {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 300px);
+}
+
 .timer {
   width: min(100%, 300px);
   color: var(--text-2);

@@ -141,6 +141,10 @@
 
 /* ─── Photo et cadre ─────────────────────────────────────────────────── */
 
+.photoPicture {
+  display: contents;
+}
+
 .photo {
   position: absolute;
   left: 8%;

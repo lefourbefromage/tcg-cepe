@@ -1,7 +1,7 @@
 // Optimise les images du jeu (SPEC §3) et les écrit dans site/public/img/.
 // Usage : npm run images [-- --force]
 //   - cadres, dos, booster : WebP (+ AVIF) transparents @1x 512×768 / @2x 1024×1536
-//   - photos des cartes    : WebP @1x 434×498 / @2x 868×996
+//   - photos des cartes    : WebP (+ AVIF) @1x 434×498 / @2x 868×996
 // Affiche un tableau avant/après et sort en erreur si un fichier dépasse son objectif.
 // Seuls frames/ et cartes/ sont lus : photos/, Webp/, export png/, figma/ ne sont jamais embarqués.
 
@@ -29,13 +29,14 @@ const FRAME_SIZES = [
   { suffix: '@2x', width: 1024, height: 1536, max: { webp: 380 * KB, avif: 180 * KB } },
 ]
 const PHOTO_SIZES = [
-  { suffix: '@1x', width: 434, height: 498, max: 50 * KB },
-  { suffix: '@2x', width: 868, height: 996, max: 160 * KB },
+  { suffix: '@1x', width: 434, height: 498, max: { webp: 50 * KB, avif: 30 * KB } },
+  { suffix: '@2x', width: 868, height: 996, max: { webp: 160 * KB, avif: 90 * KB } },
 ]
 
 const ENCODERS = {
   webp: { frame: { quality: 82, alphaQuality: 90, effort: 6 }, photo: { quality: 78, effort: 6 } },
-  avif: { frame: { quality: 55, effort: 6 } },
+  // Photos en effort 2 : ~9 % plus lourdes qu'en effort 4, visuellement identiques, ~18× plus rapides (264 fichiers).
+  avif: { frame: { quality: 55, effort: 6 }, photo: { quality: 50, effort: 2 } },
 }
 
 async function isUpToDate(src, dst) {
@@ -93,17 +94,19 @@ function buildJobs(photoFiles) {
   for (const file of photoFiles) {
     const num = path.basename(file, '.webp')
     for (const size of PHOTO_SIZES) {
-      jobs.push({
-        group: 'photo',
-        label: `cartes/${num}${size.suffix}.webp`,
-        src: path.join(CARTES_SRC, file),
-        dst: path.join(CARTES_OUT, `${num}${size.suffix}.webp`),
-        width: size.width,
-        height: size.height,
-        max: size.max,
-        format: 'webp',
-        options: ENCODERS.webp.photo,
-      })
+      for (const format of ['webp', 'avif']) {
+        jobs.push({
+          group: 'photo',
+          label: `cartes/${num}${size.suffix}.${format}`,
+          src: path.join(CARTES_SRC, file),
+          dst: path.join(CARTES_OUT, `${num}${size.suffix}.${format}`),
+          width: size.width,
+          height: size.height,
+          max: size.max[format],
+          format,
+          options: ENCODERS[format].photo,
+        })
+      }
     }
   }
   return jobs
@@ -173,8 +176,10 @@ async function main() {
     ['Cadres WebP @2x', (r) => r.group === 'frame' && r.format === 'webp' && r.label.includes('@2x')],
     ['Cadres AVIF @1x', (r) => r.group === 'frame' && r.format === 'avif' && r.label.includes('@1x')],
     ['Cadres AVIF @2x', (r) => r.group === 'frame' && r.format === 'avif' && r.label.includes('@2x')],
-    ['Photos WebP @1x', (r) => r.group === 'photo' && r.label.includes('@1x')],
-    ['Photos WebP @2x', (r) => r.group === 'photo' && r.label.includes('@2x')],
+    ['Photos WebP @1x', (r) => r.group === 'photo' && r.format === 'webp' && r.label.includes('@1x')],
+    ['Photos WebP @2x', (r) => r.group === 'photo' && r.format === 'webp' && r.label.includes('@2x')],
+    ['Photos AVIF @1x', (r) => r.group === 'photo' && r.format === 'avif' && r.label.includes('@1x')],
+    ['Photos AVIF @2x', (r) => r.group === 'photo' && r.format === 'avif' && r.label.includes('@2x')],
   ]) {
     summarize(rows.filter(test), title)
   }

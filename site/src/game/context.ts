@@ -1,10 +1,21 @@
 import { createContext, useContext } from 'react'
 import type { Achievement, OpenedCard, PlayerState, VariantKey } from '../engine'
 
+export interface OpenResult {
+  cards: OpenedCard[]
+  /** Au moins un booster doré. */
+  golden: boolean
+  /** Nombre de boosters ouverts, dont dorés. */
+  count: number
+  goldenCount: number
+}
+
 export interface Game {
   state: PlayerState
   /** Ouvre un booster et l'enregistre aussitôt. `null` si aucun booster disponible. */
-  open: () => { cards: OpenedCard[]; golden: boolean } | null
+  open: () => OpenResult | null
+  /** Ouvre tous les boosters disponibles d'un coup. */
+  openAll: () => OpenResult | null
   /** Échange 20 pts contre 1 booster. */
   exchange: () => boolean
   /** Recycle les doublons (tous, ou seulement `keys`). */

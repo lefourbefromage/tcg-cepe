@@ -8,8 +8,6 @@ import { requestGyroPermission } from '../../lib/motion'
 import buttons from '../../styles/buttons.module.css'
 import styles from './Opening.module.css'
 
-const FAN_STEP_DEG = 7
-
 /** Meilleure carte : rareté la plus haute, puis la plus récente (la dernière révélée). */
 function bestIndex(cards: OpenedCard[]): number {
   let best = 0
@@ -50,22 +48,25 @@ export function Recap({ cards, golden = false, onOpenAnother, onShowCollection, 
         {newCount > 0 ? `${newCount} nouvelle${newCount > 1 ? 's' : ''} carte${newCount > 1 ? 's' : ''}` : 'Aucune nouvelle carte'}
       </p>
 
-      <div className={styles.fan}>
+      <button type="button" className={styles.bestCard} onClick={() => zoom(bestI)} aria-label="Agrandir la meilleure carte">
+        <Card {...cards[bestI]} sizes="(max-width: 600px) 46vw, 220px" loading="eager" />
+      </button>
+
+      {/* Les 9 autres en main de cartes : chacune décalée, emblème et titre visibles. */}
+      <div className={styles.hand}>
         {others.map(({ c, i }, k) => (
           <button
             key={i}
             type="button"
-            className={styles.fanCard}
-            style={{ '--angle': `${(k - (others.length - 1) / 2) * FAN_STEP_DEG}deg`, '--k': k } as CSSProperties}
+            className={styles.handCard}
+            style={{ '--k': k - (others.length - 1) / 2, '--i': k } as CSSProperties}
             onClick={() => zoom(i)}
             aria-label={`Agrandir la carte ${i + 1}`}
           >
-            <Card num={c.num} rarity={c.rarity} isNew={c.isNew} glow={false} holo={false} sizes="(max-width: 600px) 34vw, 150px" />
+            {/* Sans badge « NOUVEAU » : il serait masqué par la carte voisine (visible au zoom). */}
+            <Card num={c.num} rarity={c.rarity} glow={false} holo={false} sizes="(max-width: 600px) 22vw, 110px" />
           </button>
         ))}
-        <button type="button" className={styles.bestCard} onClick={() => zoom(bestI)} aria-label="Agrandir la meilleure carte">
-          <Card {...cards[bestI]} sizes="(max-width: 600px) 52vw, 240px" loading="eager" />
-        </button>
       </div>
 
       <div className={styles.actions}>

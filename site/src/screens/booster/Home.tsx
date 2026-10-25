@@ -9,7 +9,7 @@ import styles from './Home.module.css'
 const SWIPE_PX = 40
 
 /** Écran 1 (accueil booster) et écran 7 (plus de booster). */
-export function Home({ onOpen }: { onOpen: (from: DOMRect | null) => void }) {
+export function Home({ onOpen, onOpenAll }: { onOpen: (from: DOMRect | null) => void; onOpenAll: (from: DOMRect | null) => void }) {
   const { state, exchange } = useGame()
   const now = useNow(1000)
   const remaining = msUntilNextBooster(state, now)
@@ -18,7 +18,8 @@ export function Home({ onOpen }: { onOpen: (from: DOMRect | null) => void }) {
   const swipeStart = useRef<number | null>(null)
   const swiped = useRef(false)
   const packRef = useRef<HTMLDivElement>(null)
-  const openFromPack = () => onOpen(packRef.current?.getBoundingClientRect() ?? null)
+  const packRect = () => packRef.current?.getBoundingClientRect() ?? null
+  const openFromPack = () => onOpen(packRect())
 
   if (state.boosters <= 0) {
     return (
@@ -80,9 +81,16 @@ export function Home({ onOpen }: { onOpen: (from: DOMRect | null) => void }) {
         <BoosterPack ref={packRef} stacked={state.boosters - 1} tilt />
       </button>
 
-      <button type="button" className={buttons.primary} onClick={openFromPack}>
-        Ouvrir un booster
-      </button>
+      <div className={styles.openButtons}>
+        <button type="button" className={buttons.primary} onClick={openFromPack}>
+          Ouvrir un booster
+        </button>
+        {state.boosters >= 2 && (
+          <button type="button" className={buttons.secondary} onClick={() => onOpenAll(packRect())}>
+            Tout ouvrir ({state.boosters})
+          </button>
+        )}
+      </div>
 
       <div className={styles.timer}>
         {remaining == null ? (

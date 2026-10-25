@@ -2,6 +2,7 @@ import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } fro
 import {
   type Achievement,
   applyRefill,
+  type OpenedCard,
   browserStorage,
   exchangePoints,
   loadState,
@@ -51,7 +52,24 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const result = openBooster(stateRef.current, Date.now())
     if (!result) return null
     commit(result.state)
-    return { cards: result.cards, golden: result.golden }
+    return { cards: result.cards, golden: result.golden, count: 1, goldenCount: result.golden ? 1 : 0 }
+  }, [commit])
+
+  const openAll = useCallback(() => {
+    const now = Date.now()
+    let next = stateRef.current
+    const cards: OpenedCard[] = []
+    let count = 0
+    let goldenCount = 0
+    for (let result = openBooster(next, now); result; result = openBooster(next, now)) {
+      next = result.state
+      cards.push(...result.cards)
+      count++
+      if (result.golden) goldenCount++
+    }
+    if (count === 0) return null
+    commit(next)
+    return { cards, golden: goldenCount > 0, count, goldenCount }
   }, [commit])
 
   const exchange = useCallback(() => {
@@ -76,13 +94,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     () => ({
       state,
       open,
+      openAll,
       exchange,
       recycle,
       toast: paused ? null : (queue[0] ?? null),
       dismissToast,
       setToastsPaused: setPaused,
     }),
-    [state, open, exchange, recycle, queue, paused, dismissToast],
+    [state, open, openAll, exchange, recycle, queue, paused, dismissToast],
   )
   return <GameContext.Provider value={game}>{children}</GameContext.Provider>
 }

@@ -19,11 +19,12 @@ export function frameImage(name: FrameName) {
   }
 }
 
-/** Sources d'une photo de carte. */
+/** Sources d'une photo de carte (AVIF, WebP en repli). */
 export function photoImage(num: string) {
-  const file = (size: '1x' | '2x') => `${BASE}/cartes/${num}@${size}.webp`
+  const file = (size: '1x' | '2x', ext: 'avif' | 'webp') => `${BASE}/cartes/${num}@${size}.${ext}`
   return {
-    srcSet: `${file('1x')} 434w, ${file('2x')} 868w`,
-    src: file('2x'),
+    avif: `${file('1x', 'avif')} 434w, ${file('2x', 'avif')} 868w`,
+    srcSet: `${file('1x', 'webp')} 434w, ${file('2x', 'webp')} 868w`,
+    src: file('2x', 'webp'),
   }
 }
