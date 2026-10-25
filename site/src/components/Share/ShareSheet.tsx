@@ -4,15 +4,6 @@ import { renderCardImage } from '../../lib/cardImage'
 import buttons from '../../styles/buttons.module.css'
 import styles from './ShareSheet.module.css'
 
-function suggestions(title: string, rarity: Rarity, num: string): string[] {
-  const label = RARITY_LABEL[rarity]
-  return [
-    `Regardez qui je viens de choper : ${title}, en ${label} ! 🍄`,
-    `${label} ! Le N°${num} « ${title} » rejoint ma collection de la Confrérie du Cèpe.`,
-    `Qui veut échanger ? J'ai ${title} en ${label}.`,
-  ]
-}
-
 function download(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -23,13 +14,12 @@ function download(blob: Blob, filename: string) {
 }
 
 /**
- * Écran 11 : aperçu de la carte, message modifiable (+ 3 suggestions), partage natif avec l'image
- * (l'utilisateur choisit Telegram et le groupe) ou, à défaut, texte seul + téléchargement.
+ * Écran 11 : aperçu de la carte et partage natif de l'image seule (l'utilisateur choisit Telegram
+ * et le groupe). Pas de texte : combiné à un fichier, il est mal géré par certaines applis.
+ * Sans partage de fichiers : téléchargement de l'image.
  */
 export function ShareSheet({ num, rarity, onClose }: { num: string; rarity: Rarity; onClose: () => void }) {
   const title = getCard(num)?.title ?? `Carte ${num}`
-  const ideas = useMemo(() => suggestions(title, rarity, num), [title, rarity, num])
-  const [text, setText] = useState(ideas[0])
   const [blob, setBlob] = useState<Blob | null>(null)
   const [error, setError] = useState(false)
   const [notice, setNotice] = useState('')
@@ -71,16 +61,11 @@ export function ShareSheet({ num, rarity, onClose }: { num: string; rarity: Rari
     const file = new File([blob], filename, { type: 'image/jpeg' })
     try {
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], text })
+        await navigator.share({ files: [file] })
         return
       }
       download(blob, filename)
-      if (navigator.share) {
-        await navigator.share({ text })
-      } else {
-        await navigator.clipboard?.writeText(text)
-        setNotice('Image enregistrée et message copié : collez-le dans Telegram.')
-      }
+      setNotice('Partage non disponible ici : l’image a été enregistrée.')
     } catch (e) {
       if ((e as DOMException).name !== 'AbortError') setNotice('Le partage a échoué. Enregistrez l’image à la place.')
     }
@@ -114,17 +99,6 @@ export function ShareSheet({ num, rarity, onClose }: { num: string; rarity: Rari
           </div>
 
           <div className={styles.form}>
-            <label className={styles.label} htmlFor="share-text">
-              Message
-            </label>
-            <textarea id="share-text" className={styles.text} value={text} rows={3} onChange={(e) => setText(e.target.value)} />
-            <div className={styles.ideas} role="group" aria-label="Suggestions">
-              {ideas.map((idea) => (
-                <button key={idea} type="button" className={styles.idea} aria-pressed={text === idea} onClick={() => setText(idea)}>
-                  {idea}
-                </button>
-              ))}
-            </div>
             <div className={styles.actions}>
               <button type="button" className={buttons.primary} disabled={!blob} onClick={share}>
                 Partager
