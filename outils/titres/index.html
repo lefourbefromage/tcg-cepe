@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Titres des cartes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  :root { --bg:#0B0B0F; --surface:#15151B; --line:#2A2A33; --text:#F4F1EA; --muted:#A3A1AD; --gold:#F5C95C; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.4 Inter, system-ui, sans-serif; height:100vh; display:flex; }
+  aside { width:300px; flex:none; border-right:1px solid var(--line); display:flex; flex-direction:column; }
+  aside header { padding:16px; border-bottom:1px solid var(--line); }
+  .bar { height:6px; border-radius:99px; background:#24242C; overflow:hidden; margin-top:8px; }
+  .bar i { display:block; height:100%; background:var(--gold); }
+  #list { overflow:auto; flex:1; padding:8px; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; align-content:start; }
+  #list button { position:relative; aspect-ratio:2/3; border:0; padding:0; border-radius:6px; overflow:hidden; cursor:pointer; background:#1d1d24; outline:2px solid transparent; }
+  #list button img { width:100%; height:100%; object-fit:cover; display:block; }
+  #list button span { position:absolute; left:0; right:0; bottom:0; font:500 10px/1.6 'JetBrains Mono', monospace; background:rgba(0,0,0,.65); }
+  #list button.done::after { content:'✓'; position:absolute; top:3px; right:4px; color:var(--gold); font-weight:700; text-shadow:0 0 3px #000; }
+  #list button.cur { outline-color:var(--gold); }
+  main { flex:1; display:flex; align-items:center; justify-content:center; gap:48px; padding:24px; min-width:0; }
+  .card { position:relative; width:min(420px, 42vh); aspect-ratio:2/3; }
+  .card .photo { position:absolute; left:8.8%; top:18.6%; width:82.8%; height:63.2%; object-fit:cover; object-position:50% 30%; }
+  .card .frame { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .card input { position:absolute; left:33%; top:8.6%; width:59%; height:8.3%; border:0; background:transparent; text-align:center;
+    font-family:'Lilita One', sans-serif; font-size:calc(min(420px, 42vh) * .075); color:#1B1712; outline:none; border-radius:6px; padding:0 4px; white-space:nowrap; }
+  .card input:focus { background:rgba(255,255,255,.25); box-shadow:0 0 0 2px var(--gold); }
+  .card .num { position:absolute; left:0; right:0; top:86.7%; height:6.1%; display:flex; align-items:center; justify-content:center;
+    font-family:'Lilita One', sans-serif; font-size:calc(min(420px, 42vh) * .07); color:#1B1712; pointer-events:none; }
+  .panel { width:300px; display:flex; flex-direction:column; gap:14px; }
+  .panel h1 { margin:0; font:700 22px/1.2 Inter, sans-serif; }
+  .muted { color:var(--muted); }
+  .count.warn { color:#FF9A6A; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; }
+  button.btn { height:44px; padding:0 16px; border-radius:12px; border:0; cursor:pointer; font:600 14px Inter, sans-serif; background:var(--surface); color:var(--text); box-shadow:inset 0 0 0 1px var(--line); }
+  button.primary { background:var(--gold); color:#0B0B0F; box-shadow:none; flex:1; }
+  select { height:40px; border-radius:10px; background:var(--surface); color:var(--text); border:1px solid var(--line); padding:0 10px; }
+  kbd { font:500 11px 'JetBrains Mono', monospace; padding:2px 6px; border-radius:5px; background:#24242C; }
+  #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1B1810; border:1px solid var(--gold); padding:10px 16px; border-radius:12px; opacity:0; transition:opacity .2s; }
+  #toast.on { opacity:1; }
+</style>
+</head>
+<body>
+<aside>
+  <header>
+    <div><b id="prog">0 / 0</b> <span class="muted">titres saisis</span></div>
+    <div class="bar"><i id="progbar" style="width:0"></i></div>
+    <label class="muted" style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="onlyTodo"> Seulement sans titre</label>
+  </header>
+  <div id="list"></div>
+</aside>
+<main>
+  <div class="card">
+    <img class="photo" id="photo" alt="">
+    <img class="frame" id="frame" alt="">
+    <input id="title" maxlength="40" placeholder="Titre…" aria-label="Titre de la carte" autocomplete="off" spellcheck="true">
+    <div class="num" id="num">N°000</div>
+  </div>
+  <div class="panel">
+    <h1 id="head">Carte 000</h1>
+    <div><span class="count" id="count">0</span> <span class="muted">caractères (la taille s’adapte, 24 max conseillé)</span></div>
+    <label class="muted">Aperçu du cadre
+      <select id="rarity">
+        <option value="commun">Commun</option><option value="rare">Rare</option>
+        <option value="epique">Épique</option><option value="legendaire">Légendaire</option>
+      </select>
+    </label>
+    <div class="row">
+      <button class="btn" id="prev">← Précédente</button>
+      <button class="btn primary" id="save">Valider et suivante</button>
+    </div>
+    <button class="btn" id="nextTodo">Aller à la prochaine sans titre</button>
+    <div class="muted" style="font-size:12.5px;line-height:1.7">
+      <kbd>Entrée</kbd> valider et suivante · <kbd>Maj</kbd>+<kbd>Entrée</kbd> valider et précédente<br>
+      <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> naviguer sans enregistrer
+    </div>
+    <div class="muted" style="font-size:12px">Enregistré dans <code>cartes/cartes.json</code> (champ <code>title</code>). Copie de sécurité : <code>cartes.backup.json</code>.</div>
+  </div>
+</main>
+<div id="toast" role="status"></div>
+<script>
+let cards = [], i = 0;
+const $ = id => document.getElementById(id);
+const toast = m => { $('toast').textContent = m; $('toast').classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => $('toast').classList.remove('on'), 1400); };
+
+async function load() {
+  cards = await (await fetch('/api/cartes')).json();
+  const first = cards.findIndex(c => !c.title);
+  i = first < 0 ? 0 : first;
+  renderList(); show();
+}
+function renderList() {
+  const only = $('onlyTodo').checked;
+  $('list').innerHTML = '';
+  cards.forEach((c, k) => {
+    if (only && c.title && k !== i) return;
+    const b = document.createElement('button');
+    b.className = (c.title ? 'done' : '') + (k === i ? ' cur' : '');
+    b.title = c.num + (c.title ? ' · ' + c.title : '');
+    b.innerHTML = `<img loading="lazy" src="/${c.file}" alt=""><span>${c.num}</span>`;
+    b.onclick = () => { i = k; show(); };
+    $('list').appendChild(b);
+  });
+  const done = cards.filter(c => c.title).length;
+  $('prog').textContent = `${done} / ${cards.length}`;
+  $('progbar').style.width = (done / cards.length * 100) + '%';
+}
+function show() {
+  const c = cards[i];
+  $('photo').src = '/' + c.file;
+  $('num').textContent = 'N°' + c.num;
+  $('head').textContent = 'Carte ' + c.num;
+  $('title').value = c.title || '';
+  updateCount();
+  renderList();
+  document.querySelector('#list .cur')?.scrollIntoView({ block: 'nearest' });
+  $('title').focus(); $('title').select();
+}
+function fitTitle() {
+  const el = $('title'), base = $('title').closest('.card').offsetWidth * .075;
+  let fs = base; el.style.fontSize = fs + 'px';
+  while (el.scrollWidth > el.clientWidth && fs > base * .55) { fs -= .5; el.style.fontSize = fs + 'px'; }
+}
+function updateCount() { fitTitle(); const n = $('title').value.trim().length; $('count').textContent = n; $('count').classList.toggle('warn', n > 24); }
+async function save(step) {
+  const c = cards[i], title = $('title').value.trim();
+  if (title !== (c.title || '')) {
+    const r = await fetch('/api/cartes/' + c.num, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) });
+    if (!r.ok) return toast('Erreur d’enregistrement');
+    c.title = (await r.json()).title; toast(`N°${c.num} enregistré`);
+  }
+  go(step);
+}
+function go(step) { i = Math.max(0, Math.min(cards.length - 1, i + step)); show(); }
+function nextTodo() { for (let k = 1; k <= cards.length; k++) { const j = (i + k) % cards.length; if (!cards[j].title) { i = j; return show(); } } toast('Toutes les cartes ont un titre !'); }
+
+$('frame').src = '/frames/commun.png';
+$('rarity').onchange = e => { $('frame').src = '/frames/' + e.target.value + '.png'; $('title').focus(); };
+$('title').oninput = updateCount;
+$('title').onkeydown = e => {
+  if (e.key === 'Enter') { e.preventDefault(); save(e.shiftKey ? -1 : 1); }
+};
+document.addEventListener('keydown', e => {
+  if (e.altKey && e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+  if (e.altKey && e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+});
+$('save').onclick = () => save(1);
+$('prev').onclick = () => save(-1);
+$('nextTodo').onclick = nextTodo;
+$('onlyTodo').onchange = renderList;
+window.addEventListener('resize', fitTitle);
+document.fonts?.ready.then(fitTitle);
+load();
+</script>
+</body>
+</html>

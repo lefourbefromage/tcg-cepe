@@ -1,0 +1,559 @@
+.screen {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: 20px 16px 32px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 6vw, 2rem);
+}
+
+.lead {
+  margin: 8px 0 20px;
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.recycleButton,
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.back {
+  padding-left: 10px;
+}
+
+.back svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.recycleCount {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #1b1405;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ─── Progression ────────────────────────────────────────────────────── */
+
+.progress {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.progressMain {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.progressRarities {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 16px;
+}
+
+@media (min-width: 700px) {
+  .progressRarities {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.meter {
+  --meter-color: var(--accent);
+  min-width: 0;
+}
+
+.meterLabel {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+
+.meterValue {
+  font-family: var(--font-mono);
+}
+
+.meterValue strong {
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.meter[data-small] .meterValue strong {
+  font-size: 0.9rem;
+}
+
+.meterBar {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.meter[data-small] .meterBar {
+  height: 4px;
+}
+
+.meterBar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--meter-color);
+}
+
+/* ─── Filtres ────────────────────────────────────────────────────────── */
+
+.filters {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 900px) {
+  .filters {
+    grid-template-columns: 1fr auto auto;
+    align-items: end;
+  }
+}
+
+.search,
+.selects select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.search::placeholder {
+  color: var(--text-2);
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.segmented button {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--text-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.segmented button[aria-checked='true'] {
+  background: var(--surface-2);
+  color: var(--text);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.06) inset;
+}
+
+.selects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.selects label {
+  display: grid;
+  gap: 4px;
+}
+
+.selects label > span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+}
+
+.count {
+  margin: 16px 0 10px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-2);
+}
+
+.empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--text-2);
+}
+
+/* ─── Grille ─────────────────────────────────────────────────────────── */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(30%, 140px), 1fr));
+  gap: 18px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+}
+
+.tile:active {
+  transform: scale(0.97);
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+}
+
+.dot[data-on] {
+  border-color: transparent;
+  background: var(--dot-color);
+  box-shadow: 0 0 6px var(--dot-color);
+}
+
+.dot[data-rarity='commun'] {
+  --dot-color: var(--rarity-commun);
+}
+
+.dot[data-rarity='rare'] {
+  --dot-color: var(--rarity-rare);
+}
+
+.dot[data-rarity='epique'] {
+  --dot-color: var(--rarity-epique);
+}
+
+.dot[data-rarity='legendaire'] {
+  --dot-color: var(--rarity-legendaire);
+}
+
+/* ─── Fiche détail ───────────────────────────────────────────────────── */
+
+.sheetBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(5 5 8 / 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fade 0.2s ease-out;
+}
+
+.sheet {
+  width: min(100%, 760px);
+  max-height: 92dvh;
+  overflow-y: auto;
+  padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+  background: var(--surface);
+  animation: sheet-in 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+@media (min-width: 900px) {
+  .sheetBackdrop {
+    align-items: center;
+  }
+  .sheet {
+    border-bottom: 1px solid var(--border);
+    border-radius: 20px;
+  }
+}
+
+.sheetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sheetHead h2 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+}
+
+.sheetHead h2 span {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  margin-right: 6px;
+}
+
+.close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.close svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.variants {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .variants {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.variantCard {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+button.variantCard {
+  cursor: pointer;
+}
+
+.variantInfo {
+  display: grid;
+  gap: 2px;
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-2);
+  text-align: center;
+}
+
+.variantInfo strong,
+.dupText em {
+  font-style: normal;
+  font-weight: 700;
+}
+
+.variantInfo strong[data-rarity='commun'],
+.dupText em[data-rarity='commun'] {
+  color: var(--rarity-commun);
+}
+.variantInfo strong[data-rarity='rare'],
+.dupText em[data-rarity='rare'] {
+  color: var(--rarity-rare);
+}
+.variantInfo strong[data-rarity='epique'],
+.dupText em[data-rarity='epique'] {
+  color: var(--rarity-epique);
+}
+.variantInfo strong[data-rarity='legendaire'],
+.dupText em[data-rarity='legendaire'] {
+  color: var(--rarity-legendaire);
+}
+
+/* ─── Recyclage ──────────────────────────────────────────────────────── */
+
+.balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.balance div {
+  display: grid;
+  gap: 2px;
+}
+
+.balance span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+}
+
+.balance strong {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+}
+
+.balanceAfter {
+  color: var(--accent);
+}
+
+.balance svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--text-2);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.recycleActions {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 24px;
+}
+
+@media (min-width: 640px) {
+  .recycleActions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dupList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dupRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.dupThumb {
+  flex: none;
+  width: 44px;
+}
+
+.dupText {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+}
+
+.dupText strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dupText span {
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+
+.dupPoints {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheetBackdrop,
+  .sheet {
+    animation: none;
+  }
+}

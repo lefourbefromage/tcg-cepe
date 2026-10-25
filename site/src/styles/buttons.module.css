@@ -1,0 +1,50 @@
+/* Boutons partagés (cibles tactiles ≥ 44 px). */
+
+.primary,
+.secondary {
+  min-height: 52px;
+  padding: 0 28px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+
+.primary {
+  border: 0;
+  background: linear-gradient(180deg, #ffd978, var(--accent));
+  color: #1b1405;
+  box-shadow: 0 6px 24px rgb(245 201 92 / 0.25);
+}
+
+.primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.primary:active:not(:disabled),
+.secondary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.primary:disabled {
+  background: var(--surface-2);
+  color: var(--text-2);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.secondary {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

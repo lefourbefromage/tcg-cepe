@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0B0B0F" />
+    <meta name="description" content="Ouvrez des boosters et collectionnez les 132 cartes de la Confrérie du Cèpe." />
+    <title>Confrérie du Cèpe — Card Game</title>
+    <!-- Booster = image principale de l'accueil. Les 4 cadres et le dos sont préchargés après le chargement (main.tsx). -->
+    <link rel="preload" as="image" type="image/avif" fetchpriority="high" imagesrcset="/img/frames/booster@1x.avif 512w, /img/frames/booster@2x.avif 1024w" imagesizes="(max-width: 600px) 64vw, 300px" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

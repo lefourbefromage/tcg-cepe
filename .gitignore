@@ -1,0 +1,15 @@
+# Sources et fichiers de travail : jamais dans le dépôt ni dans le site (SPEC §2)
+photos/
+Webp/
+export png/
+figma/
+Claude outputs/
+
+# Fichiers locaux
+frames/dos-ancien.png
+cartes/*.backup.json
+cartes/*.tmp
+.claude/
+node_modules/
+.DS_Store
+Thumbs.db

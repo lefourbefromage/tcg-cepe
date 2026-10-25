@@ -1,0 +1,81 @@
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.h1 {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  margin: 0 0 8px;
+}
+
+.h2 {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  margin: 0 0 20px;
+}
+
+.section {
+  margin-top: 40px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(150px, 40vw), 1fr));
+  gap: 32px 24px;
+  max-width: 980px;
+}
+
+.cell {
+  margin: 0;
+  max-width: 220px;
+}
+
+.cell figcaption {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-bottom: 32px;
+}
+
+.controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+
+.controls select,
+.controls input:not([type='range']) {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.controls input[type='range'] {
+  min-height: 44px;
+  accent-color: var(--accent);
+}
+
+.stage {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 8px;
+}

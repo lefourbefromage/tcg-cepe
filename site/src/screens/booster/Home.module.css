@@ -1,0 +1,174 @@
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px 16px 32px;
+  text-align: center;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 6vw, 2rem);
+}
+
+.counter {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--text-2);
+}
+
+.counter strong {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.counter span {
+  margin-left: 6px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.packButton {
+  width: min(64vw, 300px, calc((100dvh - 400px) * 2 / 3));
+  min-width: 150px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  touch-action: none;
+  transition: transform 0.2s ease;
+  animation: float 4s ease-in-out infinite;
+}
+
+.packButton:active {
+  transform: scale(0.97);
+}
+
+@keyframes float {
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+.timer {
+  width: min(100%, 300px);
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.timer p {
+  margin: 0 0 10px;
+}
+
+.timer strong {
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+
+.bar {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 1s linear;
+}
+
+/* ─── Écran 7 : minuteur circulaire ──────────────────────────────────── */
+
+.ring {
+  position: relative;
+  width: min(60vw, 240px);
+  aspect-ratio: 1;
+}
+
+.ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ringTrack,
+.ringValue {
+  fill: none;
+  stroke-width: 7;
+}
+
+.ringTrack {
+  stroke: var(--surface-2);
+}
+
+.ringValue {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s linear;
+}
+
+.ringText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.ringTime {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(2rem, 11vw, 2.8rem);
+}
+
+.ringLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+}
+
+.hint {
+  max-width: 300px;
+  margin: -8px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.reminder {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .packButton {
+    animation: none;
+  }
+}

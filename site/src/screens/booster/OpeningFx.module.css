@@ -1,0 +1,209 @@
+/* Origine des effets : l'ouverture du paquet (centre horizontal, pointillé à 12,7 % de la hauteur). */
+.fx {
+  --mouth-x: 50%;
+  --mouth-y: 12.7%;
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  transition: opacity 0.6s ease-out;
+}
+
+.fx[data-fading] {
+  opacity: 0;
+}
+
+.tint,
+.rays,
+.flash {
+  position: absolute;
+  left: var(--mouth-x);
+  top: var(--mouth-y);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+}
+
+/* Tout l'écran se teinte de la couleur de la rareté. */
+.tint {
+  z-index: -2;
+  width: 260vmax;
+  background: radial-gradient(circle closest-side, var(--fx-color) 0%, color-mix(in srgb, var(--fx-color) 35%, transparent) 30%, transparent 100%);
+  opacity: var(--fx-tint);
+  animation: fade-in 0.4s ease-out both;
+}
+
+/* Rayons qui tournent derrière le paquet. */
+.rays {
+  z-index: -1;
+  width: 220vmax;
+  background: repeating-conic-gradient(from 0deg, var(--fx-color) 0deg 5deg, transparent 5deg 14deg);
+  -webkit-mask-image: radial-gradient(closest-side, #000 6%, transparent 70%);
+  mask-image: radial-gradient(closest-side, #000 6%, transparent 70%);
+  opacity: var(--fx-rays);
+  mix-blend-mode: screen;
+  animation:
+    rays-in 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both,
+    spin 7s linear infinite;
+}
+
+/* Arc-en-ciel (Légendaire, booster doré) : rayons multicolores. */
+.fx[data-rainbow] .rays {
+  background: conic-gradient(from 0deg, #ff4d6d, #ffb84d, #fff34d, #5dff7a, #4dd8ff, #7a6bff, #ff4dd8, #ff4d6d);
+  -webkit-mask-image:
+    repeating-conic-gradient(from 0deg, #000 0deg 5deg, transparent 5deg 14deg),
+    radial-gradient(closest-side, #000 6%, transparent 70%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    repeating-conic-gradient(from 0deg, #000 0deg 5deg, transparent 5deg 14deg),
+    radial-gradient(closest-side, #000 6%, transparent 70%);
+  mask-composite: intersect;
+  animation:
+    rays-in 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both,
+    spin 4s linear infinite;
+}
+
+/* Colonne de lumière qui jaillit de l'ouverture jusqu'en haut de l'écran. */
+.pillar {
+  position: absolute;
+  left: var(--mouth-x);
+  bottom: calc(100% - var(--mouth-y));
+  width: 78%;
+  height: 220vh;
+  translate: -50% 0;
+  transform-origin: 50% 100%;
+  background: linear-gradient(
+    to top,
+    #fff 0%,
+    var(--fx-color) 14%,
+    color-mix(in srgb, var(--fx-color) 45%, transparent) 45%,
+    transparent 85%
+  );
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 32%, #000 68%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 32%, #000 68%, transparent);
+  mix-blend-mode: screen;
+  filter: blur(4px);
+  opacity: var(--fx-pillar);
+  animation:
+    pillar-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1) 0.08s backwards,
+    pillar-pulse 0.45s ease-in-out 0.45s infinite alternate;
+}
+
+/* Cœur blanc, plus étroit. */
+.pillar::after {
+  content: '';
+  position: absolute;
+  inset: 0 36%;
+  background: linear-gradient(to top, #fff 0%, rgb(255 255 255 / 0.8) 30%, transparent 75%);
+  filter: blur(3px);
+}
+
+.fx[data-rainbow] .pillar {
+  animation:
+    pillar-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1) 0.08s backwards,
+    pillar-pulse 0.45s ease-in-out 0.45s infinite alternate,
+    hue 1.4s linear infinite;
+}
+
+/* Flash à la déchirure. */
+.flash {
+  z-index: 2;
+  width: 260vmax;
+  background: radial-gradient(circle closest-side, #fff 0%, rgb(255 255 255 / 0.9) 25%, color-mix(in srgb, var(--fx-color) 60%, transparent) 50%, transparent 80%);
+  opacity: 0;
+  animation: flash 0.5s ease-out 0.05s;
+}
+
+/* Étincelles : une gerbe, ou une fontaine continue pour Épique et plus. */
+.spark {
+  position: absolute;
+  left: var(--mouth-x);
+  top: var(--mouth-y);
+  z-index: 3;
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, var(--spark) 45%, transparent 72%);
+  box-shadow: 0 0 calc(var(--size) * 1.5) var(--spark);
+  opacity: 0;
+  animation: spark var(--dur) cubic-bezier(0.15, 0.7, 0.4, 1) var(--delay) 1 forwards;
+}
+
+.fx[data-fountain] .spark {
+  animation-iteration-count: infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rays-in {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes pillar-in {
+  from {
+    transform: scale(0.3, 0);
+  }
+}
+
+@keyframes pillar-pulse {
+  to {
+    transform: scale(1.12, 1);
+    filter: blur(6px) brightness(1.2);
+  }
+}
+
+@keyframes hue {
+  to {
+    filter: blur(4px) hue-rotate(360deg);
+  }
+}
+
+@keyframes flash {
+  20% {
+    opacity: var(--fx-flash);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes spark {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.3);
+  }
+  65% {
+    opacity: 1;
+    transform: translate(var(--dx), var(--dy)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--dx) * 1.1), calc(var(--dy) + 14vmin)) scale(0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rays,
+  .pillar,
+  .flash,
+  .tint {
+    animation: none;
+  }
+  .spark,
+  .flash {
+    display: none;
+  }
+}
