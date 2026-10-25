@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { BoosterPack, type PackPhase } from '../../components/BoosterPack/BoosterPack'
 import { Card } from '../../components/Card/Card'
+import { ShareSheet } from '../../components/Share/ShareSheet'
 import { BOOSTER_SIZE, getCard, type OpenedCard, RARITY_LABEL, rarityRank } from '../../engine'
 import { useGame } from '../../game/context'
 import { duration, vibrate } from '../../lib/motion'
@@ -66,6 +67,8 @@ export function Opening({
   const [flipped, setFlipped] = useState(false)
   /** Carte révélée qui glisse vers la gauche pour laisser place à la suivante. */
   const [leaving, setLeaving] = useState<number | null>(null)
+  /** Carte révélée en cours de partage (sans attendre la fin du booster). */
+  const [sharing, setSharing] = useState<OpenedCard | null>(null)
   const lockedUntil = useRef(0)
   const slotRef = useRef<HTMLDivElement>(null)
   /** Le focus clavier suit la carte du dessus (ref stable : appelée seulement au montage de chaque carte). */
@@ -237,6 +240,18 @@ export function Opening({
             : 'Touchez la carte pour la révéler')}
       </p>
 
+      {/* Place réservée en permanence : la carte ne bouge pas quand le bouton apparaît. */}
+      <div className={styles.shareSlot}>
+        {!opening && flipped && (
+          <button type="button" className={styles.shareCard} onClick={() => setSharing(current)}>
+            <svg viewBox="0 0 24 24" aria-hidden>
+              <path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+            </svg>
+            Partager cette carte
+          </button>
+        )}
+      </div>
+
       <ol className={styles.row} aria-label="Cartes révélées">
         {cards.map((c, i) => (
           <li key={i} className={styles.slotThumb}>
@@ -244,6 +259,8 @@ export function Opening({
           </li>
         ))}
       </ol>
+
+      {sharing && <ShareSheet num={sharing.num} rarity={sharing.rarity} onClose={() => setSharing(null)} />}
     </div>
   )
 }

@@ -69,6 +69,7 @@ export const BoosterPack = forwardRef<HTMLDivElement, BoosterPackProps>(function
         } as CSSProperties
       }
       aria-hidden
+      onContextMenu={(e) => e.preventDefault()}
     >
       {Array.from({ length: Math.min(2, stacked) }, (_, i) => (
         <PackImage key={i} sizes={sizes} className={styles.behind} style={{ '--depth': i + 1 } as CSSProperties} />

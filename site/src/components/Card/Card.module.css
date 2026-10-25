@@ -22,6 +22,14 @@
   perspective: 900px;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Les images de la carte (photo, cadre) ne sont jamais la cible d'un appui long ni d'un glisser. */
+.card img,
+.card picture {
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 .card[data-rarity='rare'] {

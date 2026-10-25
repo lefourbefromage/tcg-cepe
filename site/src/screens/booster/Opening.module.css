@@ -1,7 +1,7 @@
 /* Écrans 2 à 6, en plein écran par-dessus l'en-tête et la navigation. */
 
 .overlay {
-  --card-w: min(72vw, 300px, calc((100dvh - 260px) * 2 / 3));
+  --card-w: min(72vw, 300px, calc((100dvh - 310px) * 2 / 3));
   position: fixed;
   inset: 0;
   z-index: 20;
@@ -286,10 +286,53 @@
   z-index: 3;
   min-height: 2.8em;
   max-width: 480px;
-  margin: 12px 0 8px;
+  margin: 12px 0 4px;
   text-align: center;
   font-size: 0.9rem;
   color: var(--text-2);
+}
+
+/* Bouton de partage de la carte révélée. */
+.shareSlot {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  margin-bottom: 8px;
+}
+
+.shareCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  animation: share-in 0.3s ease-out 0.35s backwards;
+}
+
+.shareCard svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@keyframes share-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }
 
 /* ─── Rangée des cartes révélées ─────────────────────────────────────── */
@@ -496,6 +539,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .shareCard,
   .stage[data-shake],
   .goldenLabel,
   .recapTitle[data-golden] {

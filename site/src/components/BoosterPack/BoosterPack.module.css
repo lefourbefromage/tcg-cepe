@@ -4,10 +4,20 @@
   width: 100%;
   aspect-ratio: 2 / 3;
   perspective: 900px;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.pack img,
+.pack picture {
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 .pack picture,
-.pack img {
+.pack img,
+.pack picture {
   position: absolute;
   inset: 0;
   width: 100%;

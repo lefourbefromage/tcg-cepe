@@ -82,6 +82,9 @@ export function Card({
       style={{ '--mask-frame': frame.mask } as CSSProperties}
       role="img"
       aria-label={label}
+      // Pas de menu natif « Copier / Enregistrer l'image » : il ne donnerait que le cadre transparent.
+      // Le partage passe par la feuille de partage, qui génère l'image complète de la carte.
+      onContextMenu={(e) => e.preventDefault()}
     >
       <div className={styles.inner}>
         {isFace && glow && (
